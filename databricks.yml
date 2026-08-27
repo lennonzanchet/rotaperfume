@@ -7,6 +7,12 @@ bundle:
 include:
   - resources/*.yml
 
+sync:
+  exclude:
+    - .agents/**
+    - dados/**
+    - material/**
+
 # Shared variables used by every deployment target.
 variables:
   catalog:
