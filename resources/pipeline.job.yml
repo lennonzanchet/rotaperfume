@@ -11,6 +11,14 @@ resources:
             base_parameters:
               catalog: ${var.catalog}
 
+        - task_key: bronze_ingestao
+          depends_on:
+            - task_key: raw_conferencia
+          notebook_task:
+            notebook_path: ../src/bronze/ingestao.py
+            base_parameters:
+              catalog: ${var.catalog}
+
       # A tarefa não declara compute dedicado e, portanto, usa serverless.
       schedule:
         quartz_cron_expression: 0 0 6 * * ?
