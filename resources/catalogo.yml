@@ -3,21 +3,30 @@ resources:
     schema_bronze:
       name: bronze
       catalog_name: ${var.catalog}
-      comment: Camada de ingestão inicial, mantendo os dados próximos da origem.
+      comment: Ingestão crua. O dado como veio da origem, sujeira inclusa.
+      properties:
+        collation: UTF8_BINARY
+        owner: root
       lifecycle:
         prevent_destroy: true
 
     schema_silver:
       name: silver
       catalog_name: ${var.catalog}
-      comment: Camada de limpeza, padronização, tipagem e deduplicação.
+      comment: Limpo, deduplicado e tipado. Preenchido na noite 2.
+      properties:
+        collation: UTF8_BINARY
+        owner: root
       lifecycle:
         prevent_destroy: true
 
     schema_gold:
       name: gold
       catalog_name: ${var.catalog}
-      comment: Camada analítica preparada para fatos, dimensões, marts e consumo.
+      comment: Fatos e dimensões, modelado para consumo. Preenchido na noite 2.
+      properties:
+        collation: UTF8_BINARY
+        owner: root
       lifecycle:
         prevent_destroy: true
 
@@ -27,6 +36,6 @@ resources:
       catalog_name: ${var.catalog}
       schema_name: bronze
       volume_type: MANAGED
-      comment: Volume destinado aos arquivos CSV originais de ERP e CRM antes da ingestão Bronze.
+      comment: CSVs originais de ERP e CRM.
       lifecycle:
         prevent_destroy: true
