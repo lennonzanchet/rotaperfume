@@ -8,3 +8,8 @@ scratch/**
 !scratch/README.md
 **/explorations/**
 **/!explorations/README.md
+
+# Local Databricks/Codex files
+.agents/
+dados/
+material/
