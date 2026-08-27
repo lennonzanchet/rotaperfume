@@ -1,0 +1,32 @@
+resources:
+  schemas:
+    schema_bronze:
+      name: bronze
+      catalog_name: ${var.catalog}
+      comment: Camada de ingestão inicial, mantendo os dados próximos da origem.
+      lifecycle:
+        prevent_destroy: true
+
+    schema_silver:
+      name: silver
+      catalog_name: ${var.catalog}
+      comment: Camada de limpeza, padronização, tipagem e deduplicação.
+      lifecycle:
+        prevent_destroy: true
+
+    schema_gold:
+      name: gold
+      catalog_name: ${var.catalog}
+      comment: Camada analítica preparada para fatos, dimensões, marts e consumo.
+      lifecycle:
+        prevent_destroy: true
+
+  volumes:
+    volume_raw:
+      name: raw
+      catalog_name: ${var.catalog}
+      schema_name: bronze
+      volume_type: MANAGED
+      comment: Volume destinado aos arquivos CSV originais de ERP e CRM antes da ingestão Bronze.
+      lifecycle:
+        prevent_destroy: true
