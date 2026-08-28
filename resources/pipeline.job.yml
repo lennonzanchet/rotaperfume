@@ -51,6 +51,41 @@ resources:
             file:
               path: ../src/silver/04-crm-e-financeiro.sql
 
+        - task_key: gold_dimensoes
+          depends_on:
+            - task_key: silver_clientes
+            - task_key: silver_pedidos
+            - task_key: silver_itens_produtos
+            - task_key: silver_crm_financeiro
+          sql_task:
+            warehouse_id: ${var.warehouse_id}
+            file:
+              path: ../src/gold/05-dimensoes.sql
+
+        - task_key: gold_fato_vendas
+          depends_on:
+            - task_key: gold_dimensoes
+          sql_task:
+            warehouse_id: ${var.warehouse_id}
+            file:
+              path: ../src/gold/06-fato-vendas.sql
+
+        - task_key: gold_marts
+          depends_on:
+            - task_key: gold_fato_vendas
+          sql_task:
+            warehouse_id: ${var.warehouse_id}
+            file:
+              path: ../src/gold/07-marts.sql
+
+        - task_key: testes
+          depends_on:
+            - task_key: gold_marts
+          sql_task:
+            warehouse_id: ${var.warehouse_id}
+            file:
+              path: ../src/gold/08-testes.sql
+
       # A tarefa não declara compute dedicado e, portanto, usa serverless.
       schedule:
         quartz_cron_expression: 0 0 6 * * ?
