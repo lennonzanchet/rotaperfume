@@ -12,6 +12,7 @@ sync:
     - .agents/**
     - dados/**
     - material/**
+    - resources/*.lvdash.json
 
 # Shared variables used by every deployment target.
 variables:
