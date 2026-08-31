@@ -1,0 +1,7 @@
+resources:
+  genie_spaces:
+    genie_comercial:
+      title: Rota do Perfume · Comercial
+      description: Agente para análise comercial da distribuidora Rota do Perfume através da camada Gold governada.
+      warehouse_id: ${var.warehouse_id}
+      file_path: ../resources/comercial.geniespace.json

@@ -1,0 +1,237 @@
+{
+  "version": 2,
+  "config": {
+    "sample_questions": [
+      {
+        "id": "0784806829893f74c63b00f3079bff46",
+        "question": ["Quais categorias têm a menor margem?"]
+      },
+      {
+        "id": "252d25261e72140870c725a113005470",
+        "question": ["Como os produtos performam nos primeiros 120 dias após o lançamento?"]
+      },
+      {
+        "id": "4ef37e498637a7b5e6125b5148c6eec2",
+        "question": ["Quais clientes estão em risco de churn?"]
+      },
+      {
+        "id": "c608291d8d8e522ad4296729ef473945",
+        "question": ["Dezembro foi um mês ruim?"]
+      },
+      {
+        "id": "e7efb0ebdabb9ac45d7c9a8553462f85",
+        "question": ["Quais marcas mais venderam nos últimos 6 meses?"]
+      },
+      {
+        "id": "ef76616165da597cd8372e815dae42eb",
+        "question": ["Quais marcas apresentam maior ruptura de estoque?"]
+      }
+    ]
+  },
+  "data_sources": {
+    "tables": [
+      {
+        "identifier": "lakehouse_rotaperfume.gold.clientes_em_risco",
+        "column_configs": [
+          {"column_name": "cidade"},
+          {"column_name": "cliente_id"},
+          {"column_name": "cnpj"},
+          {"column_name": "data_ultimo_pedido"},
+          {"column_name": "dias_sem_comprar"},
+          {"column_name": "razao_social"},
+          {"column_name": "receita_acumulada"},
+          {"column_name": "receita_mensal_anterior"},
+          {"column_name": "segmento"},
+          {"column_name": "uf"}
+        ]
+      },
+      {
+        "identifier": "lakehouse_rotaperfume.gold.dim_calendario",
+        "column_configs": [
+          {"column_name": "_processado_em"},
+          {"column_name": "ano"},
+          {"column_name": "data"},
+          {"column_name": "dia_mes"},
+          {"column_name": "dia_semana"},
+          {"column_name": "mes"},
+          {"column_name": "mes_pico_setor"},
+          {"column_name": "nome_dia_semana"},
+          {"column_name": "nome_mes"},
+          {"column_name": "trimestre"}
+        ]
+      },
+      {
+        "identifier": "lakehouse_rotaperfume.gold.dim_cliente",
+        "column_configs": [
+          {"column_name": "_processado_em"},
+          {"column_name": "ativo"},
+          {"column_name": "cidade"},
+          {"column_name": "cliente_id"},
+          {"column_name": "cliente_ids_duplicados"},
+          {"column_name": "cnpj"},
+          {"column_name": "data_cadastro"},
+          {"column_name": "data_primeiro_pedido"},
+          {"column_name": "data_ultimo_pedido"},
+          {"column_name": "dias_sem_comprar"},
+          {"column_name": "razao_social"},
+          {"column_name": "receita_acumulada"},
+          {"column_name": "segmento"},
+          {"column_name": "total_pedidos"},
+          {"column_name": "uf"}
+        ]
+      },
+      {
+        "identifier": "lakehouse_rotaperfume.gold.dim_produto",
+        "column_configs": [
+          {"column_name": "_processado_em"},
+          {"column_name": "ativo"},
+          {"column_name": "categoria"},
+          {"column_name": "custo_unitario"},
+          {"column_name": "data_lancamento"},
+          {"column_name": "descontinuado"},
+          {"column_name": "descricao"},
+          {"column_name": "marca"},
+          {"column_name": "nota_olfativa"},
+          {"column_name": "preco_tabela"},
+          {"column_name": "sku"},
+          {"column_name": "unidade"}
+        ]
+      },
+      {
+        "identifier": "lakehouse_rotaperfume.gold.dim_vendedor",
+        "column_configs": [
+          {"column_name": "_processado_em"},
+          {"column_name": "ativo"},
+          {"column_name": "data_admissao"},
+          {"column_name": "data_desligamento"},
+          {"column_name": "meta_mensal"},
+          {"column_name": "nome"},
+          {"column_name": "regiao"},
+          {"column_name": "uf"},
+          {"column_name": "vendedor_id"}
+        ]
+      },
+      {
+        "identifier": "lakehouse_rotaperfume.gold.efeito_lancamento",
+        "column_configs": [
+          {"column_name": "categoria"},
+          {"column_name": "data_lancamento"},
+          {"column_name": "marca"},
+          {"column_name": "produto"},
+          {"column_name": "receita_apos_120_dias"},
+          {"column_name": "receita_primeiros_120_dias"},
+          {"column_name": "receita_total_pos_lancamento"},
+          {"column_name": "sku"}
+        ]
+      },
+      {
+        "identifier": "lakehouse_rotaperfume.gold.fato_vendas",
+        "column_configs": [
+          {"column_name": "_processado_em"},
+          {"column_name": "ano"},
+          {"column_name": "canal"},
+          {"column_name": "categoria"},
+          {"column_name": "cidade"},
+          {"column_name": "cliente_id"},
+          {"column_name": "custo"},
+          {"column_name": "data_pedido"},
+          {"column_name": "devolucao"},
+          {"column_name": "item_id"},
+          {"column_name": "marca"},
+          {"column_name": "margem"},
+          {"column_name": "mes"},
+          {"column_name": "nota_olfativa"},
+          {"column_name": "pedido_id"},
+          {"column_name": "preco_praticado"},
+          {"column_name": "quantidade"},
+          {"column_name": "razao_social"},
+          {"column_name": "receita"},
+          {"column_name": "segmento"},
+          {"column_name": "sku"},
+          {"column_name": "uf"},
+          {"column_name": "vendedor_id"}
+        ]
+      },
+      {
+        "identifier": "lakehouse_rotaperfume.gold.margem_por_categoria",
+        "column_configs": [
+          {"column_name": "categoria"},
+          {"column_name": "margem"},
+          {"column_name": "margem_pct"},
+          {"column_name": "receita"}
+        ]
+      },
+      {
+        "identifier": "lakehouse_rotaperfume.gold.ranking_marcas",
+        "column_configs": [
+          {"column_name": "marca"},
+          {"column_name": "margem"},
+          {"column_name": "margem_pct"},
+          {"column_name": "participacao_pct"},
+          {"column_name": "receita"}
+        ]
+      },
+      {
+        "identifier": "lakehouse_rotaperfume.gold.receita_mensal",
+        "column_configs": [
+          {"column_name": "ano"},
+          {"column_name": "margem"},
+          {"column_name": "mes"},
+          {"column_name": "mes_pico_setor"},
+          {"column_name": "pedidos"},
+          {"column_name": "receita"},
+          {"column_name": "ticket_medio"}
+        ]
+      },
+      {
+        "identifier": "lakehouse_rotaperfume.gold.ruptura_por_marca",
+        "column_configs": [
+          {"column_name": "marca"},
+          {"column_name": "ruptura_pct"},
+          {"column_name": "snapshots_ruptura"},
+          {"column_name": "total_snapshots"}
+        ]
+      }
+    ]
+  },
+  "instructions": {
+    "example_question_sqls": [
+      {
+        "id": "1a48522db88fb06e047becdf089fcc6d",
+        "question": ["Quais categorias têm a menor margem?"],
+        "sql": ["SELECT categoria, receita, margem, margem_pct FROM lakehouse_rotaperfume.gold.margem_por_categoria ORDER BY margem_pct ASC"]
+      },
+      {
+        "id": "3ebe50884d27d138cd355dd4f4ef8cbd",
+        "question": ["Quais clientes estão em risco de churn?"],
+        "sql": ["SELECT cliente_id, razao_social, segmento, cidade, uf, dias_sem_comprar, receita_mensal_anterior FROM lakehouse_rotaperfume.gold.clientes_em_risco ORDER BY receita_mensal_anterior DESC"]
+      },
+      {
+        "id": "634f72971fada7d15d5dd83aa2974a1a",
+        "question": ["Como os produtos performam nos primeiros 120 dias após o lançamento?"],
+        "sql": ["SELECT sku, produto, marca, categoria, data_lancamento, receita_primeiros_120_dias, receita_apos_120_dias FROM lakehouse_rotaperfume.gold.efeito_lancamento ORDER BY receita_primeiros_120_dias DESC"]
+      },
+      {
+        "id": "9462d25a4cc5b4b104b647fcb4e9f72c",
+        "question": ["Quais marcas mais venderam nos últimos 6 meses?"],
+        "sql": ["SELECT marca, ROUND(SUM(receita), 2) AS receita FROM lakehouse_rotaperfume.gold.fato_vendas WHERE data_pedido >= add_months((SELECT date_trunc('MONTH', max(data_pedido)) FROM lakehouse_rotaperfume.gold.fato_vendas), -5) GROUP BY marca ORDER BY receita DESC"]
+      },
+      {
+        "id": "e1a877c4863bf5efa86a5205b4a15bd1",
+        "question": ["Quais marcas apresentam maior ruptura de estoque?"],
+        "sql": ["SELECT marca, total_snapshots, snapshots_ruptura, ruptura_pct FROM lakehouse_rotaperfume.gold.ruptura_por_marca ORDER BY ruptura_pct DESC"]
+      },
+      {
+        "id": "fc448d69d087c977de7819986cc3a028",
+        "question": ["Dezembro foi um mês ruim?"],
+        "sql": ["SELECT ano, mes, receita, margem, pedidos, ticket_medio, mes_pico_setor FROM lakehouse_rotaperfume.gold.receita_mensal WHERE mes = 12 ORDER BY ano"]
+      }
+    ],
+    "text_instructions": [
+      {
+        "id": "670feb1cb628f8dce80c6b54d089862a",
+        "content": ["CONTEXTO: Rota do Perfume é uma distribuidora B2B de perfumaria árabe que vende principalmente para varejistas. Use somente objetos governados de lakehouse_rotaperfume.gold. GLOSSÁRIO: ruptura é snapshot de estoque com saldo igual a zero; carteira é a relação entre cliente e vendedor responsável; oportunidade é uma negociação comercial em andamento ou encerrada; devolução é um item de venda cuja quantidade é negativa; SKU é o identificador comercial do produto; segmento é o tipo comercial do cliente; atingimento de meta é receita dividida pela meta; curva ABC classifica produtos pela participação acumulada da receita. SAZONALIDADE: o pico ocorre no mês anterior à data comemorativa porque o varejo compra antes para formar estoque. Abril antecede o Dia das Mães; junho antecede o Dia dos Namorados; outubro cobre Black Friday e preparação comercial. Dezembro e janeiro são vales esperados e receita menor nesses meses não deve ser chamada automaticamente de queda ruim, problema ou desempenho negativo, salvo se outros sinais comprovarem problema real. MÉTRICAS: receita = SUM(receita); margem = SUM(margem); margem percentual = SUM(margem) / SUM(receita); ticket médio = SUM(receita) / COUNT(DISTINCT pedido_id); cliente em risco = mais de 90 dias desde a última compra. Devoluções permanecem com quantidade e receita negativas. Quando bruto vendido for solicitado explicitamente, filtre devolucao = false. Não confunda receita líquida com bruto vendido. FONTES: prefira as seis views Gold para as perguntas que respondem diretamente; use fato_vendas e dimensões Gold apenas para recortes adicionais; nunca consulte Raw, Bronze ou Silver."]
+      }
+    ]
+  }
+}
