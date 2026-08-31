@@ -11,29 +11,29 @@
       ],
       "columns": [
         {
-          "displayName": "Receita",
+          "displayName": "Receita Total",
           "description": "Receita líquida conformada, incluindo devoluções e sem pedidos cancelados.",
           "expression": "SUM(`receita`)"
         },
         {
-          "displayName": "Margem",
+          "displayName": "Margem Total",
           "description": "Receita menos custo do produto, sem desconto comercial ou frete.",
           "expression": "SUM(`margem`)"
         },
         {
-          "displayName": "Pedidos",
+          "displayName": "Quantidade de Pedidos",
           "description": "Quantidade de pedidos válidos distintos.",
           "expression": "COUNT(DISTINCT `pedido_id`)"
         },
         {
-          "displayName": "Ticket Médio",
+          "displayName": "Ticket Médio Comercial",
           "description": "Receita dividida pela quantidade de pedidos válidos distintos.",
-          "expression": "SUM(`receita`) / NULLIF(COUNT(DISTINCT `pedido_id`), 0)"
+          "expression": "SUM(`receita`) / COUNT(DISTINCT `pedido_id`)"
         },
         {
-          "displayName": "Margem %",
-          "description": "Percentual de margem calculado como 100 vezes margem dividida pela receita.",
-          "expression": "100.0 * SUM(`margem`) / NULLIF(SUM(`receita`), 0)"
+          "displayName": "Margem Percentual",
+          "description": "Proporção da receita que permanece como margem, expressa em escala de zero a um.",
+          "expression": "SUM(`margem`) / NULLIF(SUM(`receita`), 0)"
         }
       ]
     }
@@ -149,7 +149,7 @@
               "query": {
                 "datasetName": "ds_vendas",
                 "fields": [
-                  {"name": "measure(Receita)", "expression": "MEASURE(`Receita`)"},
+                  {"name": "measure(Receita Total)", "expression": "MEASURE(`Receita Total`)"},
                   {"name": "monthly(data_pedido)", "expression": "DATE_TRUNC(\"MONTH\", `data_pedido`)"}
                 ],
                 "disaggregated": false,
@@ -161,7 +161,7 @@
               "widgetType": "counter",
               "encodings": {
                 "value": {
-                  "fieldName": "measure(Receita)",
+                  "fieldName": "measure(Receita Total)",
                   "displayName": "Receita Total",
                   "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 2}}
                 },
@@ -180,7 +180,7 @@
               "query": {
                 "datasetName": "ds_vendas",
                 "fields": [
-                  {"name": "measure(Margem)", "expression": "MEASURE(`Margem`)"},
+                  {"name": "measure(Margem Total)", "expression": "MEASURE(`Margem Total`)"},
                   {"name": "monthly(data_pedido)", "expression": "DATE_TRUNC(\"MONTH\", `data_pedido`)"}
                 ],
                 "disaggregated": false,
@@ -192,7 +192,7 @@
               "widgetType": "counter",
               "encodings": {
                 "value": {
-                  "fieldName": "measure(Margem)",
+                  "fieldName": "measure(Margem Total)",
                   "displayName": "Margem Total",
                   "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 2}}
                 },
@@ -211,7 +211,7 @@
               "query": {
                 "datasetName": "ds_vendas",
                 "fields": [
-                  {"name": "measure(Pedidos)", "expression": "MEASURE(`Pedidos`)"},
+                  {"name": "measure(Quantidade de Pedidos)", "expression": "MEASURE(`Quantidade de Pedidos`)"},
                   {"name": "monthly(data_pedido)", "expression": "DATE_TRUNC(\"MONTH\", `data_pedido`)"}
                 ],
                 "disaggregated": false,
@@ -223,7 +223,7 @@
               "widgetType": "counter",
               "encodings": {
                 "value": {
-                  "fieldName": "measure(Pedidos)",
+                  "fieldName": "measure(Quantidade de Pedidos)",
                   "displayName": "Pedidos",
                   "format": {"type": "number-plain", "decimalPlaces": {"type": "exact", "places": 0}}
                 },
@@ -242,7 +242,7 @@
               "query": {
                 "datasetName": "ds_vendas",
                 "fields": [
-                  {"name": "measure(Ticket Médio)", "expression": "MEASURE(`Ticket Médio`)"},
+                  {"name": "measure(Ticket Médio Comercial)", "expression": "MEASURE(`Ticket Médio Comercial`)"},
                   {"name": "monthly(data_pedido)", "expression": "DATE_TRUNC(\"MONTH\", `data_pedido`)"}
                 ],
                 "disaggregated": false,
@@ -254,7 +254,7 @@
               "widgetType": "counter",
               "encodings": {
                 "value": {
-                  "fieldName": "measure(Ticket Médio)",
+                  "fieldName": "measure(Ticket Médio Comercial)",
                   "displayName": "Ticket Médio",
                   "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 2}}
                 },
@@ -274,7 +274,7 @@
                 "datasetName": "ds_vendas",
                 "fields": [
                   {"name": "monthly(data_pedido)", "expression": "DATE_TRUNC(\"MONTH\", `data_pedido`)"},
-                  {"name": "measure(Receita)", "expression": "MEASURE(`Receita`)"}
+                  {"name": "measure(Receita Total)", "expression": "MEASURE(`Receita Total`)"}
                 ],
                 "disaggregated": false,
                 "orders": [{"direction": "ASC", "expression": "DATE_TRUNC(\"MONTH\", `data_pedido`)"}]
@@ -286,7 +286,7 @@
               "encodings": {
                 "x": {"fieldName": "monthly(data_pedido)", "displayName": "Mês", "scale": {"type": "temporal"}},
                 "y": {
-                  "fieldName": "measure(Receita)",
+                  "fieldName": "measure(Receita Total)",
                   "displayName": "Receita",
                   "scale": {"type": "quantitative"},
                   "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
@@ -306,10 +306,10 @@
                 "datasetName": "ds_vendas",
                 "fields": [
                   {"name": "marca", "expression": "`marca`"},
-                  {"name": "measure(Receita)", "expression": "MEASURE(`Receita`)"}
+                  {"name": "measure(Receita Total)", "expression": "MEASURE(`Receita Total`)"}
                 ],
                 "disaggregated": false,
-                "orders": [{"direction": "DESC", "expression": "MEASURE(`Receita`)"}]
+                "orders": [{"direction": "DESC", "expression": "MEASURE(`Receita Total`)"}]
               }
             }],
             "spec": {
@@ -317,7 +317,7 @@
               "widgetType": "bar",
               "encodings": {
                 "x": {
-                  "fieldName": "measure(Receita)",
+                  "fieldName": "measure(Receita Total)",
                   "displayName": "Receita",
                   "scale": {"type": "quantitative"},
                   "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
@@ -338,10 +338,10 @@
                 "datasetName": "ds_vendas",
                 "fields": [
                   {"name": "categoria", "expression": "`categoria`"},
-                  {"name": "measure(Margem %)", "expression": "MEASURE(`Margem %`)"}
+                  {"name": "measure(Margem Percentual)", "expression": "MEASURE(`Margem Percentual`)"}
                 ],
                 "disaggregated": false,
-                "orders": [{"direction": "ASC", "expression": "MEASURE(`Margem %`)"}]
+                "orders": [{"direction": "ASC", "expression": "MEASURE(`Margem Percentual`)"}]
               }
             }],
             "spec": {
@@ -350,10 +350,10 @@
               "encodings": {
                 "x": {"fieldName": "categoria", "displayName": "Categoria", "scale": {"type": "categorical"}},
                 "y": {
-                  "fieldName": "measure(Margem %)",
+                  "fieldName": "measure(Margem Percentual)",
                   "displayName": "Margem %",
                   "scale": {"type": "quantitative"},
-                  "format": {"type": "number-plain", "suffix": "%", "decimalPlaces": {"type": "exact", "places": 1}}
+                  "format": {"type": "number-percent", "decimalPlaces": {"type": "exact", "places": 1}}
                 }
               },
               "frame": {"showTitle": true, "title": "Margem % por categoria", "showDescription": true, "description": "Ordenação crescente destaca primeiro as categorias de menor margem."}
@@ -370,10 +370,10 @@
                 "datasetName": "ds_vendas",
                 "fields": [
                   {"name": "canal", "expression": "`canal`"},
-                  {"name": "measure(Receita)", "expression": "MEASURE(`Receita`)"}
+                  {"name": "measure(Receita Total)", "expression": "MEASURE(`Receita Total`)"}
                 ],
                 "disaggregated": false,
-                "orders": [{"direction": "DESC", "expression": "MEASURE(`Receita`)"}]
+                "orders": [{"direction": "DESC", "expression": "MEASURE(`Receita Total`)"}]
               }
             }],
             "spec": {
@@ -381,7 +381,7 @@
               "widgetType": "bar",
               "encodings": {
                 "x": {
-                  "fieldName": "measure(Receita)",
+                  "fieldName": "measure(Receita Total)",
                   "displayName": "Receita",
                   "scale": {"type": "quantitative"},
                   "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
@@ -405,12 +405,12 @@
                   {"name": "segmento", "expression": "`segmento`"},
                   {"name": "cidade", "expression": "`cidade`"},
                   {"name": "uf", "expression": "`uf`"},
-                  {"name": "measure(Receita)", "expression": "MEASURE(`Receita`)"},
-                  {"name": "measure(Pedidos)", "expression": "MEASURE(`Pedidos`)"},
-                  {"name": "measure(Ticket Médio)", "expression": "MEASURE(`Ticket Médio`)"}
+                  {"name": "measure(Receita Total)", "expression": "MEASURE(`Receita Total`)"},
+                  {"name": "measure(Quantidade de Pedidos)", "expression": "MEASURE(`Quantidade de Pedidos`)"},
+                  {"name": "measure(Ticket Médio Comercial)", "expression": "MEASURE(`Ticket Médio Comercial`)"}
                 ],
                 "disaggregated": false,
-                "orders": [{"direction": "DESC", "expression": "MEASURE(`Receita`)"}],
+                "orders": [{"direction": "DESC", "expression": "MEASURE(`Receita Total`)"}],
                 "limit": 20
               }
             }],
@@ -424,17 +424,17 @@
                   {"fieldName": "cidade", "displayName": "Cidade"},
                   {"fieldName": "uf", "displayName": "UF"},
                   {
-                    "fieldName": "measure(Receita)",
+                    "fieldName": "measure(Receita Total)",
                     "displayName": "Receita",
                     "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 2}}
                   },
                   {
-                    "fieldName": "measure(Pedidos)",
+                    "fieldName": "measure(Quantidade de Pedidos)",
                     "displayName": "Pedidos",
                     "format": {"type": "number-plain", "decimalPlaces": {"type": "exact", "places": 0}}
                   },
                   {
-                    "fieldName": "measure(Ticket Médio)",
+                    "fieldName": "measure(Ticket Médio Comercial)",
                     "displayName": "Ticket Médio",
                     "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 2}}
                   }
