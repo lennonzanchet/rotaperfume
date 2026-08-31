@@ -324,7 +324,7 @@
                 "datasetName": "ds_vendas",
                 "fields": [
                   {"name": "monthly(data_pedido)", "expression": "DATE_TRUNC(\"MONTH\", `data_pedido`)"},
-                  {"name": "measure(Receita Total)", "expression": "MEASURE(`Receita Total`)"}
+                  {"name": "sum(receita)", "expression": "SUM(`receita`)"}
                 ],
                 "disaggregated": false,
                 "orders": [{"direction": "ASC", "expression": "DATE_TRUNC(\"MONTH\", `data_pedido`)"}]
@@ -339,7 +339,7 @@
                   "scale": {"type": "quantitative"},
                   "fields": [
                     {
-                      "fieldName": "measure(Receita Total)",
+                      "fieldName": "sum(receita)",
                       "displayName": "Receita",
                       "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
                     }
@@ -360,10 +360,10 @@
                 "datasetName": "ds_vendas",
                 "fields": [
                   {"name": "marca", "expression": "`marca`"},
-                  {"name": "measure(Receita Total)", "expression": "MEASURE(`Receita Total`)"}
+                  {"name": "sum(receita)", "expression": "SUM(`receita`)"}
                 ],
                 "disaggregated": false,
-                "orders": [{"direction": "DESC", "expression": "MEASURE(`Receita Total`)"}]
+                "orders": [{"direction": "DESC", "expression": "SUM(`receita`)"}]
               }
             }],
             "spec": {
@@ -374,7 +374,7 @@
                   "scale": {"type": "quantitative"},
                   "fields": [
                     {
-                      "fieldName": "measure(Receita Total)",
+                      "fieldName": "sum(receita)",
                       "displayName": "Receita",
                       "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
                     }
@@ -432,10 +432,10 @@
                 "datasetName": "ds_vendas",
                 "fields": [
                   {"name": "canal", "expression": "`canal`"},
-                  {"name": "measure(Receita Total)", "expression": "MEASURE(`Receita Total`)"}
+                  {"name": "sum(receita)", "expression": "SUM(`receita`)"}
                 ],
                 "disaggregated": false,
-                "orders": [{"direction": "DESC", "expression": "MEASURE(`Receita Total`)"}]
+                "orders": [{"direction": "DESC", "expression": "SUM(`receita`)"}]
               }
             }],
             "spec": {
@@ -446,7 +446,7 @@
                   "scale": {"type": "quantitative"},
                   "fields": [
                     {
-                      "fieldName": "measure(Receita Total)",
+                      "fieldName": "sum(receita)",
                       "displayName": "Receita",
                       "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
                     }
