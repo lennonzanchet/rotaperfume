@@ -36,6 +36,40 @@
           "expression": "SUM(`margem`) / NULLIF(SUM(`receita`), 0)"
         }
       ]
+    },
+    {
+      "name": "ds_top_clientes",
+      "displayName": "Top 20 clientes por receita",
+      "queryLines": [
+        "WITH top_clientes AS (\n",
+        "  SELECT cliente_id\n",
+        "  FROM fato_vendas\n",
+        "  GROUP BY cliente_id\n",
+        "  ORDER BY SUM(receita) DESC\n",
+        "  LIMIT 20\n",
+        ")\n",
+        "SELECT vendas.ano, vendas.cliente_id, vendas.razao_social, vendas.segmento,\n",
+        "       vendas.cidade, vendas.uf, vendas.pedido_id, vendas.receita\n",
+        "FROM fato_vendas AS vendas\n",
+        "INNER JOIN top_clientes ON vendas.cliente_id = top_clientes.cliente_id\n"
+      ],
+      "columns": [
+        {
+          "displayName": "Receita Top Clientes",
+          "description": "Receita líquida conformada do cliente entre os vinte maiores do período completo.",
+          "expression": "SUM(`receita`)"
+        },
+        {
+          "displayName": "Pedidos Top Clientes",
+          "description": "Quantidade de pedidos distintos do cliente entre os vinte maiores.",
+          "expression": "COUNT(DISTINCT `pedido_id`)"
+        },
+        {
+          "displayName": "Ticket Médio Top Clientes",
+          "description": "Receita do cliente dividida pela quantidade de pedidos distintos.",
+          "expression": "SUM(`receita`) / COUNT(DISTINCT `pedido_id`)"
+        }
+      ]
     }
   ],
   "pages": [
@@ -74,6 +108,14 @@
                   "fields": [{"name": "ano", "expression": "`ano`"}],
                   "disaggregated": false
                 }
+              },
+              {
+                "name": "top_clientes_ano",
+                "query": {
+                  "datasetName": "ds_top_clientes",
+                  "fields": [{"name": "ano", "expression": "`ano`"}],
+                  "disaggregated": false
+                }
               }
             ],
             "spec": {
@@ -81,7 +123,8 @@
               "widgetType": "filter-multi-select",
               "encodings": {
                 "fields": [
-                  {"fieldName": "ano", "displayName": "Ano", "queryName": "vendas_ano"}
+                  {"fieldName": "ano", "displayName": "Ano", "queryName": "vendas_ano"},
+                  {"fieldName": "ano", "displayName": "Ano", "queryName": "top_clientes_ano"}
                 ]
               },
               "frame": {"showTitle": true, "title": "Ano"}
@@ -100,6 +143,14 @@
                   "fields": [{"name": "segmento", "expression": "`segmento`"}],
                   "disaggregated": false
                 }
+              },
+              {
+                "name": "top_clientes_segmento",
+                "query": {
+                  "datasetName": "ds_top_clientes",
+                  "fields": [{"name": "segmento", "expression": "`segmento`"}],
+                  "disaggregated": false
+                }
               }
             ],
             "spec": {
@@ -107,7 +158,8 @@
               "widgetType": "filter-multi-select",
               "encodings": {
                 "fields": [
-                  {"fieldName": "segmento", "displayName": "Segmento", "queryName": "vendas_segmento"}
+                  {"fieldName": "segmento", "displayName": "Segmento", "queryName": "vendas_segmento"},
+                  {"fieldName": "segmento", "displayName": "Segmento", "queryName": "top_clientes_segmento"}
                 ]
               },
               "frame": {"showTitle": true, "title": "Segmento"}
@@ -126,6 +178,14 @@
                   "fields": [{"name": "cidade", "expression": "`cidade`"}],
                   "disaggregated": false
                 }
+              },
+              {
+                "name": "top_clientes_cidade",
+                "query": {
+                  "datasetName": "ds_top_clientes",
+                  "fields": [{"name": "cidade", "expression": "`cidade`"}],
+                  "disaggregated": false
+                }
               }
             ],
             "spec": {
@@ -133,7 +193,8 @@
               "widgetType": "filter-multi-select",
               "encodings": {
                 "fields": [
-                  {"fieldName": "cidade", "displayName": "Cidade", "queryName": "vendas_cidade"}
+                  {"fieldName": "cidade", "displayName": "Cidade", "queryName": "vendas_cidade"},
+                  {"fieldName": "cidade", "displayName": "Cidade", "queryName": "top_clientes_cidade"}
                 ]
               },
               "frame": {"showTitle": true, "title": "Cidade"}
@@ -217,7 +278,8 @@
                 "value": {
                   "fieldName": "measure(Quantidade de Pedidos)",
                   "displayName": "Pedidos",
-                  "format": {"type": "number-plain", "decimalPlaces": {"type": "exact", "places": 0}}
+                  "format": {"type": "number-plain", "decimalPlaces": {"type": "exact", "places": 0}},
+                  "formatTemplate": "{{@}}"
                 }
               },
               "frame": {"showTitle": true, "title": "Pedidos", "showDescription": true, "description": "Período filtrado"}
@@ -274,10 +336,14 @@
               "encodings": {
                 "x": {"fieldName": "monthly(data_pedido)", "displayName": "Mês", "scale": {"type": "temporal"}},
                 "y": {
-                  "fieldName": "measure(Receita Total)",
-                  "displayName": "Receita",
                   "scale": {"type": "quantitative"},
-                  "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
+                  "fields": [
+                    {
+                      "fieldName": "measure(Receita Total)",
+                      "displayName": "Receita",
+                      "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
+                    }
+                  ]
                 }
               },
               "frame": {"showTitle": true, "title": "Receita por mês", "showDescription": true, "description": "Evolução mensal da receita líquida, incluindo devoluções."}
@@ -297,8 +363,7 @@
                   {"name": "measure(Receita Total)", "expression": "MEASURE(`Receita Total`)"}
                 ],
                 "disaggregated": false,
-                "orders": [{"direction": "DESC", "expression": "MEASURE(`Receita Total`)"}],
-                "limit": 10
+                "orders": [{"direction": "DESC", "expression": "MEASURE(`Receita Total`)"}]
               }
             }],
             "spec": {
@@ -306,10 +371,14 @@
               "widgetType": "bar",
               "encodings": {
                 "x": {
-                  "fieldName": "measure(Receita Total)",
-                  "displayName": "Receita",
                   "scale": {"type": "quantitative"},
-                  "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
+                  "fields": [
+                    {
+                      "fieldName": "measure(Receita Total)",
+                      "displayName": "Receita",
+                      "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
+                    }
+                  ]
                 },
                 "y": {"fieldName": "marca", "displayName": "Marca", "scale": {"type": "categorical"}}
               },
@@ -337,13 +406,17 @@
               "version": 3,
               "widgetType": "bar",
               "encodings": {
-                "x": {"fieldName": "categoria", "displayName": "Categoria", "scale": {"type": "categorical"}},
-                "y": {
-                  "fieldName": "measure(Margem Percentual)",
-                  "displayName": "Margem %",
+                "x": {
                   "scale": {"type": "quantitative"},
-                  "format": {"type": "number-percent", "decimalPlaces": {"type": "exact", "places": 1}}
-                }
+                  "fields": [
+                    {
+                      "fieldName": "measure(Margem Percentual)",
+                      "displayName": "Margem %",
+                      "format": {"type": "number-percent", "decimalPlaces": {"type": "exact", "places": 1}}
+                    }
+                  ]
+                },
+                "y": {"fieldName": "categoria", "displayName": "Categoria", "scale": {"type": "categorical"}}
               },
               "frame": {"showTitle": true, "title": "Margem % por categoria", "showDescription": true, "description": "Ordenação crescente destaca primeiro as categorias de menor margem."}
             }
@@ -370,10 +443,14 @@
               "widgetType": "bar",
               "encodings": {
                 "x": {
-                  "fieldName": "measure(Receita Total)",
-                  "displayName": "Receita",
                   "scale": {"type": "quantitative"},
-                  "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
+                  "fields": [
+                    {
+                      "fieldName": "measure(Receita Total)",
+                      "displayName": "Receita",
+                      "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
+                    }
+                  ]
                 },
                 "y": {"fieldName": "canal", "displayName": "Canal", "scale": {"type": "categorical"}}
               },
@@ -388,19 +465,18 @@
             "queries": [{
               "name": "main_query",
               "query": {
-                "datasetName": "ds_vendas",
+                "datasetName": "ds_top_clientes",
                 "fields": [
                   {"name": "razao_social", "expression": "`razao_social`"},
                   {"name": "segmento", "expression": "`segmento`"},
                   {"name": "cidade", "expression": "`cidade`"},
                   {"name": "uf", "expression": "`uf`"},
-                  {"name": "measure(Receita Total)", "expression": "MEASURE(`Receita Total`)"},
-                  {"name": "measure(Quantidade de Pedidos)", "expression": "MEASURE(`Quantidade de Pedidos`)"},
-                  {"name": "measure(Ticket Médio Comercial)", "expression": "MEASURE(`Ticket Médio Comercial`)"}
+                  {"name": "measure(Receita Top Clientes)", "expression": "MEASURE(`Receita Top Clientes`)"},
+                  {"name": "measure(Pedidos Top Clientes)", "expression": "MEASURE(`Pedidos Top Clientes`)"},
+                  {"name": "measure(Ticket Médio Top Clientes)", "expression": "MEASURE(`Ticket Médio Top Clientes`)"}
                 ],
                 "disaggregated": false,
-                "orders": [{"direction": "DESC", "expression": "MEASURE(`Receita Total`)"}],
-                "limit": 20
+                "orders": [{"direction": "DESC", "expression": "MEASURE(`Receita Top Clientes`)"}]
               }
             }],
             "spec": {
@@ -413,17 +489,17 @@
                   {"fieldName": "cidade", "displayName": "Cidade"},
                   {"fieldName": "uf", "displayName": "UF"},
                   {
-                    "fieldName": "measure(Receita Total)",
+                    "fieldName": "measure(Receita Top Clientes)",
                     "displayName": "Receita",
                     "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 2}}
                   },
                   {
-                    "fieldName": "measure(Quantidade de Pedidos)",
+                    "fieldName": "measure(Pedidos Top Clientes)",
                     "displayName": "Pedidos",
                     "format": {"type": "number-plain", "decimalPlaces": {"type": "exact", "places": 0}}
                   },
                   {
-                    "fieldName": "measure(Ticket Médio Comercial)",
+                    "fieldName": "measure(Ticket Médio Top Clientes)",
                     "displayName": "Ticket Médio",
                     "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 2}}
                   }
