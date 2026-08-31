@@ -75,18 +75,10 @@ CREATE OR REPLACE VIEW lakehouse_rotaperfume.gold.clientes_em_risco (
   data_ultimo_pedido COMMENT 'Data do pedido válido mais recente do cliente.',
   dias_sem_comprar COMMENT 'Quantidade de dias desde o último pedido válido.',
   receita_acumulada COMMENT 'Receita líquida acumulada do cliente no período observado.',
-  receita_mensal_anterior COMMENT 'Receita acumulada dividida pelos meses do período observado, estimando a contribuição mensal histórica interrompida.'
+  receita_mensal_media COMMENT 'Quanto o cliente comprava por mês, em média, enquanto estava ativo. Representa a receita mensal potencialmente perdida caso não retorne.'
 )
 COMMENT 'Responde quais clientes estão há mais de 90 dias sem comprar e quanta receita mensal histórica estava associada a eles.'
 AS
-WITH periodo AS (
-  SELECT
-    greatest(
-      CAST(floor(months_between(max(data_pedido), min(data_pedido))) AS INT) + 1,
-      1
-    ) AS meses_observados
-  FROM lakehouse_rotaperfume.gold.fato_vendas
-)
 SELECT
   clientes.cliente_id,
   clientes.cnpj,
@@ -97,9 +89,12 @@ SELECT
   clientes.data_ultimo_pedido,
   clientes.dias_sem_comprar,
   clientes.receita_acumulada,
-  CAST(clientes.receita_acumulada / periodo.meses_observados AS DECIMAL(18, 2)) AS receita_mensal_anterior
+  CAST(
+    clientes.receita_acumulada
+      / NULLIF(months_between(clientes.data_ultimo_pedido, clientes.data_primeiro_pedido), 0)
+    AS DECIMAL(18, 2)
+  ) AS receita_mensal_media
 FROM lakehouse_rotaperfume.gold.dim_cliente AS clientes
-CROSS JOIN periodo
 WHERE clientes.dias_sem_comprar > 90;
 
 CREATE OR REPLACE VIEW lakehouse_rotaperfume.gold.efeito_lancamento (
@@ -114,6 +109,11 @@ CREATE OR REPLACE VIEW lakehouse_rotaperfume.gold.efeito_lancamento (
 )
 COMMENT 'Responde como cada produto performa nos primeiros 120 dias após o lançamento em comparação com o restante do período.'
 AS
+WITH produtos_com_lancamento AS (
+  SELECT *
+  FROM lakehouse_rotaperfume.gold.dim_produto
+  WHERE data_lancamento IS NOT NULL
+)
 SELECT
   produtos.sku,
   produtos.descricao AS produto,
@@ -123,7 +123,7 @@ SELECT
   CAST(sum(CASE WHEN datediff(vendas.data_pedido, produtos.data_lancamento) BETWEEN 0 AND 119 THEN vendas.receita ELSE 0 END) AS DECIMAL(22, 2)) AS receita_primeiros_120_dias,
   CAST(sum(CASE WHEN datediff(vendas.data_pedido, produtos.data_lancamento) >= 120 THEN vendas.receita ELSE 0 END) AS DECIMAL(22, 2)) AS receita_apos_120_dias,
   CAST(sum(CASE WHEN vendas.data_pedido >= produtos.data_lancamento THEN vendas.receita ELSE 0 END) AS DECIMAL(22, 2)) AS receita_total_pos_lancamento
-FROM lakehouse_rotaperfume.gold.dim_produto AS produtos
+FROM produtos_com_lancamento AS produtos
 LEFT JOIN lakehouse_rotaperfume.gold.fato_vendas AS vendas
   ON produtos.sku = vendas.sku
 GROUP BY produtos.sku, produtos.descricao, produtos.marca, produtos.categoria, produtos.data_lancamento;

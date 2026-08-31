@@ -40,7 +40,7 @@
           {"column_name": "dias_sem_comprar"},
           {"column_name": "razao_social"},
           {"column_name": "receita_acumulada"},
-          {"column_name": "receita_mensal_anterior"},
+          {"column_name": "receita_mensal_media"},
           {"column_name": "segmento"},
           {"column_name": "uf"}
         ]
@@ -197,14 +197,14 @@
   "instructions": {
     "example_question_sqls": [
       {
+        "id": "03a24b96053197ea364cf854bf0780d3",
+        "question": ["Quais clientes estão em risco de churn?"],
+        "sql": ["SELECT cliente_id, razao_social, segmento, cidade, uf, dias_sem_comprar, receita_mensal_media FROM lakehouse_rotaperfume.gold.clientes_em_risco ORDER BY receita_mensal_media DESC"]
+      },
+      {
         "id": "1a48522db88fb06e047becdf089fcc6d",
         "question": ["Quais categorias têm a menor margem?"],
         "sql": ["SELECT categoria, receita, margem, margem_pct FROM lakehouse_rotaperfume.gold.margem_por_categoria ORDER BY margem_pct ASC"]
-      },
-      {
-        "id": "3ebe50884d27d138cd355dd4f4ef8cbd",
-        "question": ["Quais clientes estão em risco de churn?"],
-        "sql": ["SELECT cliente_id, razao_social, segmento, cidade, uf, dias_sem_comprar, receita_mensal_anterior FROM lakehouse_rotaperfume.gold.clientes_em_risco ORDER BY receita_mensal_anterior DESC"]
       },
       {
         "id": "634f72971fada7d15d5dd83aa2974a1a",
